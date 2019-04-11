@@ -25,3 +25,14 @@ hs_err_pid*
 #idea
 .DS_Store
 .idea
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+# mpeltonen/sbt-idea plugin
+.idea_modules/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
