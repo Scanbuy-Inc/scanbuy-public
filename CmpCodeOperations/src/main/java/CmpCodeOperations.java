@@ -27,8 +27,8 @@ public class CmpCodeOperations {
         String secretKey = "sD/XuzirrBViase345reDFRT5"; // TODO: Get Secret Key from ScanLife account > Settings
         String codeName = "uniqueCodeName1"; // TODO: should be unique for all codes
         String codeURL = "http://scanlife.com"; // TODO: required for web type codes
-        String shortURL = createCode(codeName,codeURL,apiKey,secretKey);
-        System.out.println("Code Created: "+ shortURL);
+        String createCodeUrl = createCode(codeName,codeURL,apiKey,secretKey);
+        System.out.println("Create code url: "+ createCodeUrl);
     }
 
     /**
@@ -88,47 +88,15 @@ public class CmpCodeOperations {
             Base64 encoder = new Base64();
             signature = new String(encoder.encode(rawHmac));
             // finally we are generate the signature
-            System.out.println("signature=" + signature);
+            System.out.println("signature= " + signature);
             //**** Signature generator end *****//
 
             //**** Creating HTTP URL for call ****//
             String createCodeUrl = "http://app.scanlife.com/api/code/createcode?"
                     + buffer.toString() + "&signature="
                     + URLEncoder.encode(signature, "UTF-8");
-            System.out.println(createCodeUrl);
-            String responseString = callURL(createCodeUrl); // This function makes Http GET call
-            //**** Creating HTTP URL for call end ****//
-
-            //**** Handling XML response of create code call ****//
-            if(responseString != null){
-                DocumentBuilderFactory dbf =
-                        DocumentBuilderFactory.newInstance();
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                InputSource is = new InputSource();
-                is.setCharacterStream(new StringReader(responseString));
-
-                Document doc = db.parse(is); // xml response of create code
-                NodeList nodes = doc.getElementsByTagName("createcoderesponse");
-                Element element = (Element) nodes.item(0);
-                String message = getElementString(element,"message");
-                System.out.println("Create Code "+ message);
-                if(message.equals("Success!")){
-                    shortURL = getElementString(element,"shorturl");
-                    //System.out.println("COdeIDDD "+ codeID);
-                    //  System.out.println("SHORTURL "+ shortURL);
-
-                }
-                else{
-                    String errorMessage = getElementString(element,"errormsg");
-                    //System.out.println("ERRDSF "+ errorMessage);
-
-                }
-                return shortURL;
-            }else{
-                System.out.println("URL CALL FAILED!! CHECK NETWORK!!");
-                return null;
-            }
-            //**** Handling XML response of create code call **** ends//
+            //System.out.println(createCodeUrl);
+            return createCodeUrl;
 
         }catch (Exception e){
             e.printStackTrace();
@@ -148,106 +116,6 @@ public class CmpCodeOperations {
         String timestamp = DATE_FORMAT.format(today);
         //  System.out.println("timestamp=" + timestamp);
         return  timestamp;
-    }
-
-    /**
-     *
-     * @param url Http get request url
-     * @return Http response
-     * @throws Exception
-     */
-
-    private static String callURL(String url) throws Exception{
-
-        try {
-
-            URL obj = new URL(url);
-            HttpURLConnection conn = (HttpURLConnection) obj.openConnection();
-            conn.setReadTimeout(6000);
-            conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-            conn.addRequestProperty("User-Agent", "Mozilla");
-            //   conn.addRequestProperty("Referer", "google.com");
-
-            //  System.out.println("Request URL ... " + url);
-
-            boolean redirect = false;
-
-            // normally, 3xx is redirect
-            int status = conn.getResponseCode();
-            if (status != HttpURLConnection.HTTP_OK) {
-                if (status == HttpURLConnection.HTTP_MOVED_TEMP
-                        || status == HttpURLConnection.HTTP_MOVED_PERM
-                        || status == HttpURLConnection.HTTP_SEE_OTHER)
-                    redirect = true;
-            }
-
-            //   System.out.println("Response Code ... " + status);
-
-            if (redirect) {
-
-                // get redirect url from "location" header field
-                String newUrl = conn.getHeaderField("Location");
-
-                // get the cookie if need, for login
-                String cookies = conn.getHeaderField("Set-Cookie");
-
-                // open the new connnection again
-                conn = (HttpURLConnection) new URL(newUrl).openConnection();
-                conn.setRequestProperty("Cookie", cookies);
-                conn.addRequestProperty("Accept-Language", "en-US,en;q=0.8");
-                conn.addRequestProperty("User-Agent", "Mozilla");
-                //   conn.addRequestProperty("Referer", "google.com");
-
-                //      System.out.println("Redirect to URL : " + newUrl);
-
-            }
-
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-            String inputLine;
-            StringBuffer html = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                html.append(inputLine);
-            }
-            in.close();
-
-            //   System.out.println("URL Content... \n" + html.toString());
-            //   System.out.println("Done");
-
-            return  html.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    /**
-     *
-     * @param element
-     * @param tagName
-     * @return
-     */
-    private static String getElementString(Element element,String tagName) {
-        NodeList name = element.getElementsByTagName(tagName);
-        Element line = (Element) name.item(0);
-        return  getCharacterDataFromElement(line);
-    }
-
-    /**
-     *
-     * @param e
-     * @return
-     */
-    private static String getCharacterDataFromElement(Element e) {
-        Node child = e.getFirstChild();
-        if (child instanceof CharacterData) {
-            CharacterData cd = (CharacterData) child;
-            return cd.getData();
-        }
-        return "?";
     }
 
 }
