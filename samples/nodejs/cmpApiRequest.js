@@ -1,5 +1,5 @@
 const axios = require('axios');
-var parser = require('fast-xml-parser');
+const parser = require('fast-xml-parser');
 const helper = require('./helper.js');
 
 const scanbuyApiEndPoint = "http://api.scanlife.com/api/code/";
@@ -35,7 +35,7 @@ axios.get(apiUrl)
         console.log(response.data); // xml response here
         if(response.data) {
             const xmlData = response.data;
-            if( parser.validate(xmlData) === true) { //optional (it'll return an object in case it's not valid)
+            if(parser.validate(xmlData) === true) { //optional (it'll return an object in case it's not valid)
                 const jsonObj = parser.parse(xmlData);
                 console.log(jsonObj)
             }

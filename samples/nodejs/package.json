@@ -1,0 +1,17 @@
+{
+  "name": "cmp-api-request",
+  "description": "Sample code on how to interact with CMP's API.",
+  "version": "1.0.0",
+  "main": "cmpApiRequest.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Scanbuy Inc.",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "crypto-js": "^4.0.0",
+    "fast-xml-parser": "^3.18.0",
+    "moment": "^2.29.1"
+  }
+}
